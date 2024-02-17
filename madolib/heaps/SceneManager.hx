@@ -1,5 +1,7 @@
 package madolib.heaps;
 
+using madolib.extensions.ArrayExt;
+
 @:access(madolib.heaps.SceneTree)
 @:allow(madolib.hepas.App)
 class SceneManager {
