@@ -53,6 +53,12 @@ class Sprite extends Node {
 
     public final onAnimEnd = new Signal0();
 
+    override function get_width(): Float
+        return animation.map(anim -> anim.getFrame().tile.width).withDefault(0);
+
+    override function get_height(): Float
+        return animation.map(anim -> anim.getFrame().tile.height).withDefault(0);
+
     public function new() {
         super();
     }
@@ -91,15 +97,7 @@ class Sprite extends Node {
         aseAnim.currentFrame = startFrame ?? 0;
         aseAnim.onAnimEnd = () -> onAnimEnd();
         currentAnimationName = name;
-        syncSize();
         isDirty = true;
-    }
-
-    inline function syncSize() {
-        animation.each(anim -> {
-            width = anim.frames[anim.currentFrame].tile.width;
-            height = anim.frames[anim.currentFrame].tile.height;
-        });
     }
 
     inline function syncAnimation() {
@@ -120,7 +118,6 @@ class Sprite extends Node {
             syncAnimation();
             isDirty = false;
         }
-        syncSize();
         super.sync(ctx);
         oldPivotX = pivotX;
         oldPivotY = pivotY;
