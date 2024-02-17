@@ -234,7 +234,6 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         final baseY = y;
         x = pivotedX;
         y = pivotedY;
-        trace(x, y);
         super.getBoundsRec(relativeTo, out, forSize);
         x = baseX;
         y = baseY;
