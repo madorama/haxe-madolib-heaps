@@ -1,0 +1,89 @@
+{
+    "indentation": {
+        "character": "    "
+    },
+    "wrapping": {
+        "objectLiteral": {
+            "defaultWrap": "keep"
+        },
+        "methodChain": {
+            "defaultWrap": "keep"
+        },
+        "arrayWrap": {
+            "defaultWrap": "keep"
+        },
+        "callParameter": {
+            "defaultWrap": "keep"
+        }
+    },
+    "lineEnds": {
+        "leftCurly": "after",
+        "emptyCurly": "noBreak",
+        "objectLiteralCurly": {
+            "leftCurly": "none"
+        }
+    },
+    "emptyLines": {
+        "importAndUsing": {
+            "betweenImportsLevel": "all",
+            "betweenImports": 0,
+            "beforeUsing": 1
+        },
+        "maxAnywhereInFile": 1
+    },
+    "sameLine": {
+        "functionBody": "keep",
+        "anonFunctionBody": "keep",
+        "ifElse": "keep",
+        "doWhile": "keep",
+        "tryBody": "keep",
+        "tryCatch": "same",
+        "ifBody": "keep",
+        "elseBody": "keep",
+        "elseIf": "keep",
+        "expressionIf": "keep",
+        "returnBody": "keep",
+        "caseBody": "keep"
+    },
+    "whitespace": {
+        "colonPolicy": "around",
+        "caseColonPolicy": "after",
+        "objectFieldColonPolicy": "after",
+        "typeHintColonPolicy": "after",
+        "typeCheckColonPolicy": "after",
+        "bracesConfig": {
+            "objectLiteralBraces": {
+                "openingPolicy": "after",
+                "closingPolicy": "before"
+            }
+        },
+        "forPolicy": "none",
+        "parenConfig": {
+            "conditionParens": {
+                "openingPolicy": "none",
+                "closingPolicy": "after"
+            },
+            "funcParamParens": {
+                "openingPolicy": "none",
+                "closingPolicy": "after",
+                "removeInnerWhenEmpty": true
+            },
+            "anonFuncParamParens": {
+                "openingPolicy": "none",
+                "closingPolicy": "after",
+                "removeInnerWhenEmpty": true
+            },
+            "switchConditionParens": {
+                "openingPolicy": "none",
+                "closingPolicy": "after",
+                "removeInnerWhenEmpty": true
+            }
+        },
+        "arrowFunctionsPolicy": "around",
+        "functionTypeHaxe3Policy": "around",
+        "functionTypeHaxe4Policy": "around",
+        "typeParamOpenPolicy": "none",
+        "typeParamClosePolicy": "none",
+        "binopPolicy": "around"
+    }
+}

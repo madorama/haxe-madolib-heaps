@@ -1,0 +1,19 @@
+{
+    "name": "madolib-heaps",
+    "url": "https://github.com/madorama/haxe-madolib-heaps",
+    "license": "MIT",
+    "tags": ["game", "Heaps", "package"],
+    "description": "",
+    "version": "0.0.1",
+    "releasenote": "",
+    "contributors": ["madorama"],
+    "dependencies": {
+        "heaps": "",
+        "heaps-aseprite": "",
+        "differ": "",
+        "polygonal-ds": "",
+        "ldtk-haxe-api": "",
+        "hxmath": "",
+        "castle": ""
+    }
+}
