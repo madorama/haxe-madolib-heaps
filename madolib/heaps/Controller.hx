@@ -1,4 +1,4 @@
-package madolib;
+package madolib.heaps;
 
 import madolib.heaps.GamePad;
 import madolib.heaps.Input;

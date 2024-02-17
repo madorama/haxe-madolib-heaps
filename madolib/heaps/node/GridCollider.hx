@@ -7,6 +7,8 @@ import madolib.collider.Collide.HitPosition;
 import madolib.collider.Collide;
 import madolib.geom.Bounds;
 
+using madolib.extensions.ArrayExt;
+
 class GridCollider extends Collider {
     var cellWidth = 0.;
     var cellHeight = 0.;

@@ -3,8 +3,10 @@ package madolib.heaps.node;
 import aseprite.AseAnim;
 import aseprite.Aseprite;
 import h2d.RenderContext;
+import madolib.Option;
 import madolib.event.Signal0;
 
+using madolib.extensions.MapExt;
 using madolib.heaps.extensions.AsepriteExt;
 
 class Sprite extends Node {
