@@ -76,6 +76,7 @@ class App extends hxd.App {
         @:privateAccess Input.mouseX = s2d.mouseX;
         @:privateAccess Input.mouseY = s2d.mouseY;
         App.tmod = hxd.Timer.tmod;
+        GamePad.update();
     }
 
     var fixedUpdateAccum = 0.;
