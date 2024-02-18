@@ -267,4 +267,13 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         x = baseX;
         y = baseY;
     }
+
+    override function addChildAt(s: h2d.Object, pos: Int) {
+        super.addChildAt(s, pos);
+        if(s is Node) {
+            final node = cast(s, Node);
+            node.sceneTree = sceneTree;
+        }
+    }
+
 }
