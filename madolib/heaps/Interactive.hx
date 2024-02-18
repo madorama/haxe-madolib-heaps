@@ -119,7 +119,7 @@ class Interactive {
         return interactive.shapeY = v;
 
     public final onStartCapture = new Signal<hxd.Event>();
-    public final onCancelCapture = new Signal0<>();
+    public final onCancelCapture = new Signal0();
     public final onOver = new Signal<hxd.Event>();
     public final onOut = new Signal<hxd.Event>();
     public final onPush = new Signal<hxd.Event>();
