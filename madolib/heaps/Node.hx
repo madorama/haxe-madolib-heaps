@@ -287,4 +287,39 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         return null;
     }
 
+    public function findChild<T>(f: h2d.Object -> Null<T>, recursive: Bool = false): Null<T> {
+        function go(object: h2d.Object, f: h2d.Object -> Null<T>, recursive: Bool): Null<T> {
+            final result = f(object);
+            if(result != null) return result;
+            if(recursive) {
+                for(child in object.children) {
+                    final result = go(child, f, recursive);
+                    if(result != null) return result;
+                }
+            }
+            return null;
+        }
+        for(child in children) {
+            final result = go(child, f, recursive);
+            if(result != null) return result;
+        }
+        return null;
+    }
+
+    public function findChildren<T>(f: h2d.Object -> Null<T>, recursive: Bool = false): Array<T> {
+        final result: Array<T> = [];
+        function go(object: h2d.Object, f: h2d.Object -> Null<T>, recursive: Bool) {
+            final r = f(object);
+            if(r != null) result.push(r);
+            if(recursive) {
+                for(child in object.children) {
+                    go(child, f, recursive);
+                }
+            }
+        }
+        for(child in children) {
+            go(child, f, recursive);
+        }
+        return result;
+    }
 }
