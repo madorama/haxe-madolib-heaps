@@ -276,4 +276,15 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         }
     }
 
+    public function getParentNode(): Null<Node> {
+        var parent = parent;
+        while(parent != null) {
+            if(parent is Node) {
+                return cast parent;
+            }
+            parent = parent.parent;
+        }
+        return null;
+    }
+
 }
