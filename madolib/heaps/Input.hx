@@ -5,15 +5,6 @@ import hxd.Key;
 using madolib.extensions.ArrayExt;
 
 class Input {
-    public static var mouseX(default, null): Float = 0;
-    public static var mouseY(default, null): Float = 0;
-
-    public inline static function setMousePosition(x: Float, y: Float) {
-        mouseX = x;
-        mouseY = y;
-        hxd.Window.getInstance().setCursorPos(Std.int(x), Std.int(y));
-    }
-
     public inline static function isAnyDown(keys: Array<Int>): Bool
         return keys.any(Key.isDown);
 
