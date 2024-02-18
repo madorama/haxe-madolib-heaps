@@ -47,20 +47,11 @@ abstract class Collider extends Node {
     function set_right(value: Float): Float
         return right = value;
 
-    public var centerX(get, set): Float;
-    public var centerY(get, set): Float;
-
-    function get_centerX(): Float
+    override function get_centerX(): Float
         return left + width * .5;
 
-    function set_centerX(value: Float): Float
-        return left = value - width * .5;
-
-    function get_centerY(): Float
+    override function get_centerY(): Float
         return top + height * .5;
-
-    function set_centerY(value: Float): Float
-        return top = value - height * .5;
 
     public var size(get, never): Vector2;
     public var halfSize(get, never): Vector2;

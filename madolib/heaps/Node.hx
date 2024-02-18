@@ -42,6 +42,15 @@ class Node extends h2d.Object implements Updatable implements Disposable {
     inline function get_pivotedY(): Float
         return y - pivotY * scaledHeight;
 
+    public var centerX(get, never): Float;
+    public var centerY(get, never): Float;
+
+    function get_centerX(): Float
+        return x + scaledWidth / 2;
+
+    function get_centerY(): Float
+        return y + scaledHeight / 2;
+
     var isStarted = false;
     var active(default, set): Bool = true;
 
