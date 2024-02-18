@@ -28,47 +28,50 @@ class AsepriteExt {
         return anim;
     }
 
-    // public static function getCollisions(ase: Aseprite, baseSliceName: String, collisionSliceName: String, flipX: Bool = false,
-    //         flipY: Bool = false): Array<Bounds> {
-    //     if(!ase.slices.exists(baseSliceName))
-    //         return [];
-    //     final baseSlice = ase.getSlice(baseSliceName);
-    //     final baseTile = baseSlice.tile;
-    //     final colNames = ase.slices.keys().filter(k -> k.indexOf(collisionSliceName) == 0);
-    //     return if(colNames.length == 0) {
-    //         [new Bounds(baseTile.dx, baseTile.dy, baseTile.width, baseTile.height)];
-    //     } else {
-    //         colNames.map(colName -> {
-    //             final colSlice = ase.getSlice(colName);
-    //             final col = colSlice.tile;
-    //             final padLeft = col.x - baseTile.x;
-    //             final padTop = col.y - baseTile.y;
-    //             final padRight = baseTile.width - (padLeft + col.width);
-    //             final padBottom = baseTile.height - (padTop + col.height);
-    //             final x = if(flipX) padRight else padLeft;
-    //             final y = if(flipY) padBottom else padTop;
-    //             new Bounds(x, y, col.width, col.height);
-    //         });
-    //     }
-    // }
-    // public static function getCollision(ase: Aseprite, baseSliceName: String, collisionSliceName: String, flipX: Bool = false,
-    //         flipY: Bool = false): Option<Bounds> {
-    //     if(!ase.slices.exists(baseSliceName))
-    //         return None;
-    //     final baseSlice = ase.getSlice(baseSliceName);
-    //     final baseTile = baseSlice.tile;
-    //     final colSlice = ase.getSlice(collisionSliceName);
-    //     return if(colSlice == null) {
-    //         Some(new Bounds(baseTile.dx, baseTile.dy, baseTile.width, baseTile.height));
-    //     } else {
-    //         final col = colSlice.tile;
-    //         final padLeft = col.x - baseTile.x;
-    //         final padTop = col.y - baseTile.y;
-    //         final padRight = baseTile.width - (padLeft + col.width);
-    //         final padBottom = baseTile.height - (padTop + col.height);
-    //         final x = if(flipX) padRight else padLeft;
-    //         final y = if(flipY) padBottom else padTop;
-    //         Some(new Bounds(x, y, col.width, col.height));
-    //     }
-    // }
+    public static function getCollisions(ase: Aseprite, baseSliceName: String, ?collisionSliceName: String, flipX: Bool = false,
+            flipY: Bool = false): Array<Bounds> {
+        if(!ase.slices.exists(baseSliceName))
+            return [];
+        final baseSlice = ase.getSlice(baseSliceName);
+        final baseTile = baseSlice.tile;
+        final colSliceName = collisionSliceName ?? '${baseSliceName}-Col';
+        final colNames = ase.slices.keys().filter(k -> k.indexOf(colSliceName) == 0);
+        return if(colNames.length == 0) {
+            [new Bounds(baseTile.dx, baseTile.dy, baseTile.width, baseTile.height)];
+        } else {
+            colNames.map(colName -> {
+                final colSlice = ase.getSlice(colName);
+                final col = colSlice.tile;
+                final padLeft = col.x - baseTile.x;
+                final padTop = col.y - baseTile.y;
+                final padRight = baseTile.width - (padLeft + col.width);
+                final padBottom = baseTile.height - (padTop + col.height);
+                final x = if(flipX) padRight else padLeft;
+                final y = if(flipY) padBottom else padTop;
+                new Bounds(x, y, col.width, col.height);
+            });
+        }
+    }
+
+    public static function getCollision(ase: Aseprite, baseSliceName: String, ?collisionSliceName: String, flipX: Bool = false,
+            flipY: Bool = false): Option<Bounds> {
+        if(!ase.slices.exists(baseSliceName))
+            return None;
+        final baseSlice = ase.getSlice(baseSliceName);
+        final baseTile = baseSlice.tile;
+        final colSliceName = collisionSliceName ?? '${baseSliceName}-Col';
+        final colSlice = ase.getSlice(colSliceName);
+        return if(colSlice == null) {
+            Some(new Bounds(baseTile.dx, baseTile.dy, baseTile.width, baseTile.height));
+        } else {
+            final col = colSlice.tile;
+            final padLeft = col.x - baseTile.x;
+            final padTop = col.y - baseTile.y;
+            final padRight = baseTile.width - (padLeft + col.width);
+            final padBottom = baseTile.height - (padTop + col.height);
+            final x = if(flipX) padRight else padLeft;
+            final y = if(flipY) padBottom else padTop;
+            Some(new Bounds(x, y, col.width, col.height));
+        }
+    }
 }
