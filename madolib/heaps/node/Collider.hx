@@ -8,7 +8,16 @@ import madolib.collider.Collide;
 import madolib.geom.Bounds;
 
 abstract class Collider extends Node {
-    public var node(default, default): Node = Node.empty;
+    public var node(get, never): Node;
+
+    inline function get_node(): Node {
+        return if(parent is Node) {
+            cast parent;
+        } else {
+            Node.empty;
+        }
+    }
+
     @:isVar public var top(get, set): Float = 0;
     @:isVar public var bottom(get, set): Float = 0;
     @:isVar public var left(get, set): Float = 0;
@@ -119,9 +128,8 @@ abstract class Collider extends Node {
         return innerBounds;
     }
 
-    public function new(?node: Node) {
+    public function new() {
         super();
-        if(node != null) this.node = node;
     }
 
     public function collidePoint(point: Vector2): Bool {

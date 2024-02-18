@@ -20,8 +20,8 @@ class GridCollider extends Collider {
     inline function computeId(x: Int, y: Int): Int
         return x + y * cellsWidth;
 
-    public function new(cellsWidth: Int, cellsHeight: Int, cellWidth: Float, cellHeight: Float, ?node: Node) {
-        super(node);
+    public function new(cellsWidth: Int, cellsHeight: Int, cellWidth: Float, cellHeight: Float) {
+        super();
         data.resize(cellsWidth * cellsHeight);
         this.cellWidth = cellWidth;
         this.cellHeight = cellHeight;
@@ -108,6 +108,15 @@ class GridCollider extends Collider {
     override function set_height(v: Float): Float
         throw new NotImplementedException();
 
+    override function get_left(): Float
+        return x;
+
+    override function set_left(value: Float): Float
+        return x = value;
+
+    override function get_top(): Float
+        return y;
+
     override function set_top(v: Float): Float
         return y = v;
 
@@ -124,7 +133,7 @@ class GridCollider extends Collider {
         return y = v - height;
 
     function clone(): Collider {
-        final grid = new GridCollider(cellsWidth, cellsHeight, cellWidth, cellHeight, node);
+        final grid = new GridCollider(cellsWidth, cellsHeight, cellWidth, cellHeight);
         grid.data = data.copy();
         return grid;
     }

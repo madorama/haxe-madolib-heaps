@@ -7,8 +7,8 @@ import madolib.geom.Bounds;
 class CircleCollider extends Collider {
     public var radius: Float;
 
-    public function new(radius: Float, x: Float = 0, y: Float = 0, ?node: Node) {
-        super(node);
+    public function new(radius: Float, x: Float = 0, y: Float = 0) {
+        super();
         this.radius = radius;
         this.x = x;
         this.y = y;
@@ -68,7 +68,7 @@ class CircleCollider extends Collider {
         return Collide.circleVsLine(absolutePosition, scaledRadius, from, to);
 
     function clone(): Collider
-        return new CircleCollider(radius, x, y, node);
+        return new CircleCollider(radius, x, y);
 
     function debugDraw(g: h2d.Graphics) {
         g.drawCircle(absoluteX, absoluteY, scaledRadius);

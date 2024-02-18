@@ -7,6 +7,18 @@ import madolib.collider.Collide;
 using madolib.extensions.DifferExt;
 
 class BoxCollider extends Collider {
+    override function get_left(): Float
+        return x;
+
+    override function set_left(value: Float): Float
+        return x = value;
+
+    override function get_top(): Float
+        return y;
+
+    override function set_top(value: Float): Float
+        return y = value;
+
     override function get_right(): Float
         return x + width;
 
@@ -19,7 +31,7 @@ class BoxCollider extends Collider {
     override function set_bottom(value: Float): Float
         return y = value - height;
 
-    public function new(x: Float, y: Float, width: Float, height: Float, ?node: Node) {
+    public function new(x: Float, y: Float, width: Float, height: Float) {
         super();
         this.x = x;
         this.y = y;
@@ -53,11 +65,11 @@ class BoxCollider extends Collider {
         return new Vector2(absoluteRight, absoluteTop).createRayFromVector(new Vector2(absoluteRight, absoluteBottom));
 
     function clone(): Collider
-        return new BoxCollider(x, y, width, height, node);
+        return new BoxCollider(x, y, width, height);
 
     public function debugDraw(g: h2d.Graphics) {
         final b = bounds;
-        g.drawRect(b.x, b.y, b.width, b.height);
+        g.drawRect(b.left, b.top, b.width, b.height);
     }
 
     function collideBox(box: BoxCollider): Bool

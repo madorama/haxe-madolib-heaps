@@ -22,8 +22,8 @@ class PolygonCollider extends Collider {
         return v;
     }
 
-    public function new(x: Float, y: Float, vertices: Array<Vector2>, ?node: Node) {
-        super(node);
+    public function new(x: Float, y: Float, vertices: Array<Vector2>) {
+        super();
         this.vertices = vertices.map(v -> new Vector(v.x, v.y));
 
         // Get width and height
@@ -67,10 +67,10 @@ class PolygonCollider extends Collider {
         }
     }
 
-    function getAbsoluteVertices(): Array<Vector> {
+    function getAbsoluteVertices(): Array<Vector2> {
         polygon.scaleX = node.scaleX;
         polygon.scaleY = node.scaleY;
-        final vs = polygon.transformedVertices.map(v -> new Vector(v.x + x * (node.scaleX - 1), v.y + y * (node.scaleY - 1)));
+        final vs = polygon.transformedVertices.map(v -> new Vector2(v.x + x * (node.scaleX - 1), v.y + y * (node.scaleY - 1)));
         polygon.scaleX = 1;
         polygon.scaleY = 1;
         return vs;
@@ -135,7 +135,7 @@ class PolygonCollider extends Collider {
 
     function clone(): Collider {
         final poly = new PolygonCollider(x, y, vertices.map(v -> new Vector2(v.x, v.y)));
-        poly.rotation = rotation;
+        poly.setRotation(rotation);
         return poly;
     }
 
@@ -161,7 +161,7 @@ class PolygonCollider extends Collider {
             new Vector2(x, y + height),
         ];
         final poly = new PolygonCollider(x, y, vs);
-        poly.rotation = rotation;
+        poly.setRotation(rotation);
         return poly;
     }
 }
