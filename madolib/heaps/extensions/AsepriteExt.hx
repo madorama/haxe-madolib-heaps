@@ -22,8 +22,8 @@ class AsepriteExt {
         return anim;
     }
 
-    public inline static function getAnimationFromTag(aseprite: Aseprite, tag: String, loop: Bool = false): AseAnim {
-        final anim = new AseAnim(aseprite.getTag(tag));
+    public inline static function getAnimationFromTag(aseprite: Aseprite, tag: String, ?sliceName: String, loop: Bool = false): AseAnim {
+        final anim = new AseAnim(aseprite.getTag(tag, sliceName));
         anim.loop = loop;
         return anim;
     }

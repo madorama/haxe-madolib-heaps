@@ -63,8 +63,13 @@ class Sprite extends Node {
         super();
     }
 
-    public inline function addAnimation(ase: Aseprite, name: String, loop: Bool = false): Sprite {
-        addAnimationWithAseAnim(name, ase.getAnimationFromTag(name, loop));
+    extern overload public inline function addAnimation(ase: Aseprite, name: String, ?sliceName: String, loop: Bool = false): Sprite {
+        addAnimationWithAseAnim(name, ase.getAnimationFromTag(name, sliceName, loop));
+        return this;
+    }
+
+    extern overload public inline function addAnimation(ase: aseprite.res.Aseprite, name: String, ?sliceName: String, loop: Bool = false): Sprite {
+        addAnimationWithAseAnim(name, ase.toAseprite().getAnimationFromTag(name, sliceName, loop));
         return this;
     }
 
@@ -106,7 +111,6 @@ class Sprite extends Node {
             for(frame in anim.frames) {
                 frame.tile.xFlip = xFlip;
                 frame.tile.yFlip = yFlip;
-                frame.tile.setCenterRatio(pivotX, pivotY);
             }
         });
     }
