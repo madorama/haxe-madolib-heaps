@@ -1,6 +1,5 @@
 package madolib.heaps;
 
-import h2d.Object;
 import h2d.RenderContext;
 import h2d.col.Bounds;
 
@@ -46,10 +45,10 @@ class Node extends h2d.Object implements Updatable implements Disposable {
     public var centerY(get, never): Float;
 
     function get_centerX(): Float
-        return x + scaledWidth / 2;
+        return pivotedX + scaledWidth * .5;
 
     function get_centerY(): Float
-        return y + scaledHeight / 2;
+        return pivotedY + scaledHeight * .5;
 
     var isStarted = false;
     var active(default, set): Bool = true;
@@ -163,56 +162,11 @@ class Node extends h2d.Object implements Updatable implements Disposable {
             resume();
     }
 
-    public function update(dt: Float) {
-        function go(cs: Array<h2d.Object>) {
-            for(child in cs) {
-                if(child is Node) {
-                    final node = cast(child, Node);
-                    if(node.disposed) {
-                        node.onDispose();
-                        node.remove();
-                        continue;
-                    }
-                    if(!node.isStarted) {
-                        node.start();
-                    }
-                    if(node.active && node.isStarted)
-                        node.update(dt);
-                } else {
-                    go(child.children);
-                }
-            }
-        }
-        go(children);
-    }
+    public function update(dt: Float) {}
 
-    public function fixedUpdate() {
-        function go(cs: Array<h2d.Object>) {
-            for(child in cs) {
-                if(child is Node) {
-                    final node = cast(child, Node);
-                    node.fixedUpdate();
-                } else {
-                    go(child.children);
-                }
-            }
-        }
-        go(children);
-    }
+    public function fixedUpdate() {}
 
-    public function afterUpdate(dt: Float) {
-        function go(cs: Array<h2d.Object>) {
-            for(child in cs) {
-                if(child is Node) {
-                    final node = cast(child, Node);
-                    node.afterUpdate(dt);
-                } else {
-                    go(child.children);
-                }
-            }
-        }
-        go(children);
-    }
+    public function afterUpdate(dt: Float) {}
 
     public function addGroup(name: String) {
         if(grouped.exists(name)) return;
@@ -299,6 +253,9 @@ class Node extends h2d.Object implements Updatable implements Disposable {
             }
             return null;
         }
+        final result = f(this);
+        if(result != null) return result;
+
         for(child in children) {
             final result = go(child, f, recursive);
             if(result != null) return result;
@@ -317,6 +274,10 @@ class Node extends h2d.Object implements Updatable implements Disposable {
                 }
             }
         }
+
+        final r = f(this);
+        if(r != null) result.push(r);
+
         for(child in children) {
             go(child, f, recursive);
         }

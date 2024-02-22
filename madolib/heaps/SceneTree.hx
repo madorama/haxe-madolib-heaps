@@ -4,7 +4,8 @@ using madolib.extensions.ArrayExt;
 using madolib.extensions.MapExt;
 
 @:access(madolib.heaps.Node)
-class SceneTree extends Node implements Updatable implements Disposable {
+@:access(h2d.Object)
+class SceneTree implements Updatable implements Disposable {
     public var defaultFrameRate(get, never): Float;
 
     inline function get_defaultFrameRate(): Float
@@ -26,9 +27,9 @@ class SceneTree extends Node implements Updatable implements Disposable {
     public var paused(default, null): Bool = false;
     public var destroyed(default, null): Bool = false;
 
-    public function new() {
-        super();
-    }
+    public var nodes: Array<Node> = [];
+
+    public function new() {}
 
     public inline function getGroupNodes(name: String): Array<Node>
         return groups.withDefault(name, []);
@@ -36,7 +37,7 @@ class SceneTree extends Node implements Updatable implements Disposable {
     public function addNode(node: Node) {
         if(node.sceneTree != this) {
             node.removeSceneTree();
-            addChild(node);
+            nodes.push(node);
             node.sceneTree = this;
         }
     }
@@ -46,7 +47,8 @@ class SceneTree extends Node implements Updatable implements Disposable {
             for(name => g in groups) {
                 removeGroupNode(name, node);
             }
-            node.remove();
+            nodes.remove(node);
+            node.dispose();
         }
     }
 
@@ -77,6 +79,76 @@ class SceneTree extends Node implements Updatable implements Disposable {
 
     function onResize() {}
 
+    public function dispose() {
+        while(nodes.length >= 0) {
+            final node = nodes[0];
+            nodes.splice(0, 1);
+            node.dispose();
+            node.onDispose();
+        }
+        groups.clear();
+    }
+
+    public function pause() {
+        paused = true;
+    }
+
+    public function resume() {
+        paused = false;
+    }
+
+    public function find<T: Node>(f: Node -> Null<T>, ?groupName: String, recursive: Bool = false): Null<T> {
+        function go(object: h2d.Object, f: Node -> T, recursive: Bool): Null<T> {
+            if(object is Node) {
+                final r = f(cast object);
+                if(r != null) return r;
+            }
+            if(recursive) {
+                for(child in object.children) {
+                    final result = go(child, f, recursive);
+                    if(result != null) return result;
+                }
+            }
+            return null;
+        }
+
+        final nodes = if(groupName != null) {
+            groups.get(groupName) ?? [];
+        } else {
+            this.nodes;
+        }
+        for(node in nodes) {
+            final result = go(node, f, recursive);
+            if(result != null) return result;
+        }
+        return null;
+    }
+
+    public function findAll<T: Node>(f: Node -> Null<T>, ?groupName: String, recursive: Bool = false): Array<T> {
+        final result = [];
+        function go(object: h2d.Object, f: Node -> Null<T>, recursive: Bool) {
+            if(object is Node) {
+                final r = f(cast object);
+                if(f(r) != null) result.push(r);
+            }
+            if(recursive) {
+                for(child in object.children) {
+                    go(child, f, recursive);
+                }
+            }
+        }
+
+        final nodes = if(groupName != null) {
+            groups.get(groupName) ?? [];
+        } else {
+            this.nodes;
+        }
+        for(node in nodes) {
+            go(node, f, recursive);
+        }
+        return result;
+    }
+
     inline function canRun(): Bool
         return !(paused || destroyed);
 
@@ -87,14 +159,14 @@ class SceneTree extends Node implements Updatable implements Disposable {
             if(group == null) continue;
             group.remove(node);
         }
-        children = children.removeAt(index);
+        nodes = nodes.removeAt(index);
     }
 
     inline function gc() {
-        var i = children.length - 1;
+        var i = nodes.length - 1;
 
         while(i >= 0) {
-            final node = Std.downcast(children[i], Node);
+            final node = nodes[i];
             if(node != null) {
                 if(node.disposed) {
                     disposeNode(i, node);
@@ -104,6 +176,65 @@ class SceneTree extends Node implements Updatable implements Disposable {
             } else {
                 i--;
             }
+        }
+    }
+
+    function update(dt: Float) {
+        function go(cs: Array<h2d.Object>) {
+            for(child in cs) {
+                if(child is Node) {
+                    if(child is Node) {
+                        final node = cast(child, Node);
+                        if(node.disposed) {
+                            node.onDispose();
+                            node.remove();
+                            continue;
+                        }
+                        if(!node.isStarted) {
+                            node.start();
+                        }
+                        if(node.active && node.isStarted)
+                            node.update(dt);
+                    }
+                    go(child.children);
+                }
+            }
+        }
+        for(node in nodes) {
+            go(node.children);
+            node.update(dt);
+        }
+    }
+
+    function fixedUpdate() {
+        function go(cs: Array<h2d.Object>) {
+            for(child in cs) {
+                if(child is Node) {
+                    final node = cast(child, Node);
+                    if(node.active) node.fixedUpdate();
+                }
+                go(child.children);
+            }
+        }
+        for(node in nodes) {
+            go(node.children);
+            node.fixedUpdate();
+        }
+    }
+
+    function afterUpdate(dt: Float) {
+        function go(cs: Array<h2d.Object>) {
+            for(child in cs) {
+                if(child is Node) {
+                    final node = cast(child, Node);
+                    if(node.active) node.afterUpdate(dt);
+                }
+                go(child.children);
+            }
+        }
+        for(node in nodes) {
+            go(node.children);
+            node.afterUpdate(dt);
         }
     }
 
