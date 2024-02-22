@@ -4,6 +4,9 @@ import ldtk.Layer_AutoLayer;
 import ldtk.Layer_IntGrid;
 import ldtk.Layer_Tiles;
 
+using madolib.Option.OptionExt;
+using madolib.extensions.ArrayExt;
+
 class LdtkExt {
     public inline static function getEnumValue<T>(self: Layer_IntGrid, cx: Int, cy: Int, t: Enum<T>): Option<T>
         return safeGetName(self, cx, cy).map(name -> Type.createEnum(t, name, []));
