@@ -36,29 +36,24 @@ class SceneTree implements Updatable implements Disposable {
 
     public function addNode(node: Node) {
         if(node.sceneTree != this) {
-            node.removeSceneTree();
-            nodes.push(node);
+            node.sceneTree?.nodes.remove(node);
+            node.removeAllGroup();
             node.sceneTree = this;
+            nodes.push(node);
         }
     }
 
     public function removeNode(node: Node) {
         if(node.sceneTree == this) {
-            for(name => g in groups) {
-                removeGroupNode(name, node);
-            }
-            nodes.remove(node);
             node.dispose();
         }
     }
 
-    public function addGroupNode(name: String, node: Node): Array<Node> {
+    public function addGroupNode(name: String, node: Node) {
         addNode(node);
-        final group = groups.withDefaultOrSet(name, []);
         if(!node.isInGroup(name)) {
-            group.push(node);
+            node.addGroup(name);
         }
-        return group;
     }
 
     public function removeGroupNode(name: String, node: Node) {
@@ -68,13 +63,11 @@ class SceneTree implements Updatable implements Disposable {
     }
 
     public function deleteGroup(name: String) {
-        if(groups.exists(name)) {
-            final group = groups.get(name);
-            if(group == null) return;
-            for(node in group)
-                node.grouped.remove(name);
-            groups.remove(name);
-        }
+        final group = groups.get(name);
+        if(group == null) return;
+        for(node in group)
+            node.grouped.remove(name);
+        groups.remove(name);
     }
 
     function onResize() {}
@@ -152,33 +145,6 @@ class SceneTree implements Updatable implements Disposable {
     inline function canRun(): Bool
         return !(paused || destroyed);
 
-    inline function disposeNode(index: Int, node: Node) {
-        if(!node.onDisposed) node.onDispose();
-        for(groupName in node.grouped.keys()) {
-            final group = groups.get(groupName);
-            if(group == null) continue;
-            group.remove(node);
-        }
-        nodes = nodes.removeAt(index);
-    }
-
-    inline function gc() {
-        var i = nodes.length - 1;
-
-        while(i >= 0) {
-            final node = nodes[i];
-            if(node != null) {
-                if(node.disposed) {
-                    disposeNode(i, node);
-                    continue;
-                }
-                i--;
-            } else {
-                i--;
-            }
-        }
-    }
-
     function update(dt: Float) {
         function go(cs: Array<h2d.Object>) {
             for(child in cs) {
@@ -186,9 +152,10 @@ class SceneTree implements Updatable implements Disposable {
                     if(child is Node) {
                         final node = cast(child, Node);
                         if(node.disposed) {
-                            node.onDispose();
-                            node.remove();
-                            continue;
+                            @:privateAccess App.disposedNodes.push(node);
+                            nodes.remove(node);
+                            node.removeAllGroup();
+                            node.sceneTree = null;
                         }
                         if(!node.isStarted) {
                             node.start();

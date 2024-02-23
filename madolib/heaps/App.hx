@@ -7,6 +7,8 @@ import madolib.event.Signal;
 class App extends hxd.App {
     public var window: Window;
 
+    static var disposedNodes: Array<Node> = [];
+
     public var ftime(default, null): Float = 0;
 
     public var elapsedFrames(get, never): Int;
@@ -83,8 +85,16 @@ class App extends hxd.App {
     public final runFixedUpdate = new Signal0();
     public final runAfterUpdate = new Signal<Float>();
 
+    @:access(madolib.heaps.Node)
     inline function doUpdate(dt: Float) {
         ftime += App.tmod;
+
+        for(node in disposedNodes) {
+            if(!node.onDisposed) {
+                node.onDispose();
+            }
+        }
+        disposedNodes = [];
 
         runUpdate(dt);
 

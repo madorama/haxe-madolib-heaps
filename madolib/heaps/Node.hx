@@ -3,6 +3,8 @@ package madolib.heaps;
 import h2d.RenderContext;
 import h2d.col.Bounds;
 
+using madolib.extensions.MapExt;
+
 class Node extends h2d.Object implements Updatable implements Disposable {
     public static final empty = new Node();
 
@@ -171,7 +173,8 @@ class Node extends h2d.Object implements Updatable implements Disposable {
     public function addGroup(name: String) {
         if(grouped.exists(name)) return;
         if(sceneTree == null) return;
-        final group = sceneTree.addGroupNode(name, this);
+        final group = sceneTree.groups.withDefaultOrSet(name, []);
+        group.push(this);
         grouped[name] = group;
     }
 
@@ -185,10 +188,9 @@ class Node extends h2d.Object implements Updatable implements Disposable {
     public inline function isInGroup(name: String): Bool
         return grouped.exists(name);
 
-    public function removeSceneTree() {
-        if(sceneTree != null) {
-            sceneTree.removeNode(this);
-            sceneTree = null;
+    public function removeAllGroup() {
+        for(name => _ in grouped) {
+            removeGroup(name);
         }
     }
 

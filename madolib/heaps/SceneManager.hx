@@ -50,7 +50,6 @@ class SceneManager {
         pushReservedScenes = [];
 
         for(scene in scenes) {
-            if(scene.canRun()) scene.gc();
             scene.doUpdate(dt);
         }
     }
