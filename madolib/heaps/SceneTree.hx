@@ -92,8 +92,9 @@ class SceneTree implements Updatable implements Disposable {
 
     public function find<T: Node>(f: Node -> Null<T>, ?groupName: String, recursive: Bool = false): Null<T> {
         function go(object: h2d.Object, f: Node -> T, recursive: Bool): Null<T> {
-            if(object is Node) {
-                final r = f(cast object);
+            final node = Util.downcast(object, Node);
+            if(node != null) {
+                final r = f(node);
                 if(r != null) return r;
             }
             if(recursive) {
@@ -120,8 +121,9 @@ class SceneTree implements Updatable implements Disposable {
     public function findAll<T: Node>(f: Node -> Null<T>, ?groupName: String, recursive: Bool = false): Array<T> {
         final result = [];
         function go(object: h2d.Object, f: Node -> Null<T>, recursive: Bool) {
-            if(object is Node) {
-                final r = f(cast object);
+            final node = Util.downcast(object, Node);
+            if(node != null) {
+                final r = f(node);
                 if(f(r) != null) result.push(r);
             }
             if(recursive) {
@@ -148,23 +150,21 @@ class SceneTree implements Updatable implements Disposable {
     function update(dt: Float) {
         function go(cs: Array<h2d.Object>) {
             for(child in cs) {
-                if(child is Node) {
-                    if(child is Node) {
-                        final node = cast(child, Node);
-                        if(node.disposed) {
-                            @:privateAccess App.disposedNodes.push(node);
-                            nodes.remove(node);
-                            node.removeAllGroup();
-                            node.sceneTree = null;
-                        }
-                        if(!node.isStarted) {
-                            node.start();
-                        }
-                        if(node.active && node.isStarted)
-                            node.update(dt);
+                final node = Util.downcast(child, Node);
+                if(node != null) {
+                    if(node.disposed) {
+                        @:privateAccess App.disposedNodes.push(node);
+                        nodes.remove(node);
+                        node.removeAllGroup();
+                        node.sceneTree = null;
                     }
-                    go(child.children);
+                    if(!node.isStarted) {
+                        node.start();
+                    }
+                    if(node.active && node.isStarted)
+                        node.update(dt);
                 }
+                go(child.children);
             }
         }
         for(node in nodes) {
@@ -176,9 +176,9 @@ class SceneTree implements Updatable implements Disposable {
     function fixedUpdate() {
         function go(cs: Array<h2d.Object>) {
             for(child in cs) {
-                if(child is Node) {
-                    final node = cast(child, Node);
-                    if(node.active) node.fixedUpdate();
+                final node = Util.downcast(child, Node);
+                if(node != null && node.active) {
+                    node.fixedUpdate();
                 }
                 go(child.children);
             }
@@ -192,9 +192,9 @@ class SceneTree implements Updatable implements Disposable {
     function afterUpdate(dt: Float) {
         function go(cs: Array<h2d.Object>) {
             for(child in cs) {
-                if(child is Node) {
-                    final node = cast(child, Node);
-                    if(node.active) node.afterUpdate(dt);
+                final node = Util.downcast(child, Node);
+                if(node != null && node.active) {
+                    node.afterUpdate(dt);
                 }
                 go(child.children);
             }

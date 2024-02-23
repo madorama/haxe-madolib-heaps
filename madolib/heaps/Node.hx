@@ -89,8 +89,9 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         isStarted = true;
         function go(cs: Array<h2d.Object>) {
             for(child in cs) {
-                if(child is Node) {
-                    cast(child, Node).start();
+                final node = Util.downcast(child, Node);
+                if(node != null) {
+                    node.start();
                 } else {
                     go(child.children);
                 }
@@ -105,8 +106,9 @@ class Node extends h2d.Object implements Updatable implements Disposable {
 
         function go(cs: Array<h2d.Object>) {
             for(child in cs) {
-                if(child is Node) {
-                    cast(child, Node).dispose();
+                final node = Util.downcast(child, Node);
+                if(node != null) {
+                    node.dispose();
                 } else {
                     go(child.children);
                 }
@@ -124,8 +126,9 @@ class Node extends h2d.Object implements Updatable implements Disposable {
 
         function go(cs: Array<h2d.Object>) {
             for(child in cs) {
-                if(child is Node) {
-                    cast(child, Node).onDispose();
+                final node = Util.downcast(child, Node);
+                if(node != null) {
+                    node.onDispose();
                 } else {
                     go(child.children);
                 }
@@ -137,8 +140,8 @@ class Node extends h2d.Object implements Updatable implements Disposable {
     function onChangeActive() {
         function go(cs: Array<h2d.Object>) {
             for(child in cs) {
-                if(child is Node) {
-                    final node = cast(child, Node);
+                final node = Util.downcast(child, Node);
+                if(node != null) {
                     node.active = active;
                     node.onChangeActive();
                 } else {
@@ -241,8 +244,8 @@ class Node extends h2d.Object implements Updatable implements Disposable {
 
     override function addChildAt(s: h2d.Object, pos: Int) {
         super.addChildAt(s, pos);
-        if(s is Node) {
-            final node = cast(s, Node);
+        final node = Util.downcast(s, Node);
+        if(node != null) {
             node.sceneTree = sceneTree;
         }
     }
@@ -250,9 +253,9 @@ class Node extends h2d.Object implements Updatable implements Disposable {
     public function getParentNode(): Null<Node> {
         var parent = parent;
         while(parent != null) {
-            if(parent is Node) {
-                return cast parent;
-            }
+            final node = Util.downcast(parent, Node);
+            if(node != null)
+                return node;
             parent = parent.parent;
         }
         return null;
