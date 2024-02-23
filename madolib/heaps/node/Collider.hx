@@ -166,4 +166,9 @@ abstract class Collider extends Node {
     abstract function collidePolygon(polygon: PolygonCollider): Bool;
 
     abstract function collideGrid(grid: GridCollider): Bool;
+
+    override function update(dt: Float) {
+        super.update(dt);
+        rotation = node.rotation;
+    }
 }
