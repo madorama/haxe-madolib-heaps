@@ -8,6 +8,7 @@ import madolib.event.Signal0;
 
 using madolib.extensions.MapExt;
 using madolib.heaps.extensions.AsepriteExt;
+using madolib.heaps.extensions.AsepriteFrameExt;
 
 class Sprite extends Node {
     public var currentAnimationName(default, null) = "";
@@ -61,6 +62,11 @@ class Sprite extends Node {
 
     public function new() {
         super();
+    }
+
+    extern overload public inline function addAnimationWithSlice(ase: Aseprite, sliceName: String, loop: Bool = false): Sprite {
+        addAnimationWithAseAnim(sliceName, ase.getSlices(sliceName).toAseAnim());
+        return this;
     }
 
     extern overload public inline function addAnimation(ase: Aseprite, name: String, ?sliceName: String, loop: Bool = false): Sprite {
