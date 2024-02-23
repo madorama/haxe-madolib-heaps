@@ -194,34 +194,49 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         }
     }
 
-    override function getBoundsRec(relativeTo: h2d.Object, out: h2d.col.Bounds, forSize: Bool) {
-        final baseX = x;
-        final baseY = y;
-        x = pivotedX;
-        y = pivotedY;
-        super.getBoundsRec(relativeTo, out, forSize);
-        x = baseX;
-        y = baseY;
-    }
-
-    override function syncPos() {
-        final baseX = x;
-        final baseY = y;
-        x = pivotedX;
-        y = pivotedY;
-        super.syncPos();
-        x = baseX;
-        y = baseY;
-    }
-
-    override function drawRec(ctx: RenderContext) {
-        final baseX = x;
-        final baseY = y;
-        x = pivotedX;
-        y = pivotedY;
-        super.drawRec(ctx);
-        x = baseX;
-        y = baseY;
+    override function calcAbsPos() {
+        if(parent == null) {
+            var cr, sr;
+            if(rotation == 0) {
+                cr = 1.;
+                sr = 0.;
+                matA = scaleX;
+                matB = 0;
+                matC = 0;
+                matD = scaleY;
+            } else {
+                cr = Math.cos(rotation);
+                sr = Math.sin(rotation);
+                matA = scaleX * cr;
+                matB = scaleX * sr;
+                matC = scaleY * -sr;
+                matD = scaleY * cr;
+            }
+            absX = x - (pivotX * width * matA + pivotY * height * matC);
+            absY = y - (pivotX * width * matB + pivotY * height * matD);
+        } else {
+            // M(rel) = S . R . T
+            // M(abs) = M(rel) . P(abs)
+            if(rotation == 0) {
+                matA = scaleX * parent.matA;
+                matB = scaleX * parent.matB;
+                matC = scaleY * parent.matC;
+                matD = scaleY * parent.matD;
+            } else {
+                var cr = Math.cos(rotation);
+                var sr = Math.sin(rotation);
+                var tmpA = scaleX * cr;
+                var tmpB = scaleX * sr;
+                var tmpC = scaleY * -sr;
+                var tmpD = scaleY * cr;
+                matA = tmpA * parent.matA + tmpB * parent.matC;
+                matB = tmpA * parent.matB + tmpB * parent.matD;
+                matC = tmpC * parent.matA + tmpD * parent.matC;
+                matD = tmpC * parent.matB + tmpD * parent.matD;
+            }
+            absX = x * parent.matA + y * parent.matC + parent.absX - (pivotX * width * matA + pivotY * height * matC);
+            absY = x * parent.matB + y * parent.matD + parent.absY - (pivotX * width * matB + pivotY * height * matD);
+        }
     }
 
     override function addChildAt(s: h2d.Object, pos: Int) {
