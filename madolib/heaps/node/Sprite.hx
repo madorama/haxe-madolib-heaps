@@ -65,7 +65,7 @@ class Sprite extends Node {
 
     inline function get_currentTile(): Tile {
         final anim = animation.get();
-        if(tile == null) return Tile.fromColor(0xFF0000);
+        if(anim == null) return Tile.fromColor(0xFF0000);
         return anim.frames[anim.currentFrame].tile;
     }
 
