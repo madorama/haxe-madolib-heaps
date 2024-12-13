@@ -177,7 +177,7 @@ class GridCollider extends Collider {
         var to = to - absolutePosition;
         from = new Vector2(Math.floor(from.x / cellWidth), Math.floor(from.y / cellHeight));
         to = new Vector2(Math.floor(to.x / cellWidth), Math.floor(to.y / cellHeight));
-        final lines = dn.Bresenham.getThickLine(Std.int(from.x), Std.int(from.y), Std.int(to.x), Std.int(to.y), true);
+        final lines = dn.geom.Bresenham.getThickLine(Std.int(from.x), Std.int(from.y), Std.int(to.x), Std.int(to.y), true);
         for(p in lines) {
             if(!get(p.x, p.y)) continue;
             switch Collide.intersectBoundsVsLine(new Bounds(p.x * cellWidth, p.y * cellHeight, cellWidth, cellHeight), baseFrom, baseTo) {
