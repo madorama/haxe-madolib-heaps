@@ -3,6 +3,7 @@ package madolib.heaps.node;
 import aseprite.AseAnim;
 import aseprite.Aseprite;
 import h2d.RenderContext;
+import h2d.Tile;
 import madolib.Option;
 import madolib.event.Signal0;
 
@@ -59,6 +60,14 @@ class Sprite extends Node {
 
     override function get_height(): Float
         return animation.map(anim -> anim.getFrame().tile.height).withDefault(0);
+
+    public var currentTile(get, never): Tile;
+
+    inline function get_currentTile(): Tile {
+        final anim = animation.get();
+        if(tile == null) return Tile.fromColor(0xFF0000);
+        return anim.frames[anim.currentFrame].tile;
+    }
 
     public function new() {
         super();
