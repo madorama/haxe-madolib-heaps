@@ -12,7 +12,7 @@ class AutoTile {
 
     public var animNum(default, null): Int = 1;
 
-    public var autotiles(default, null): Array<Array<Tile>> = [];
+    public var autoTile(default, null): Tile = Tile.fromColor(0);
 
     static final patterns = [
         [0, 2, 1, 4],
@@ -124,7 +124,7 @@ class AutoTile {
     public function generatePatterns() {
         final halfSize = Math.floor(size / 2);
 
-        inline function combinePixels(typeIndex: Array<Int>, animFrame: Int): Pixels {
+        function combinePixels(typeIndex: Array<Int>, animFrame: Int): Pixels {
             final fixedArray = [
                 typeIndex[2],
                 typeIndex[3],
@@ -146,7 +146,13 @@ class AutoTile {
         }
 
         animNum = Std.int(tile.width / size);
-        autotiles = [for(i in 0...animNum) [for(p in patterns) Tile.fromPixels(combinePixels(p, i))]];
+        final autoTilePixels = Pixels.alloc(size * patterns.length, size * animNum, hxd.PixelFormat.RGBA);
+        for(animId in 0...animNum) {
+            for(i => p in patterns) {
+                autoTilePixels.blit(i * size, animId * size, combinePixels(p, animId), 0, 0, size, size);
+            }
+        }
+        autoTile = Tile.fromPixels(autoTilePixels);
     }
 
     public inline static function getIndex(neighbors: Array<Bool>): Int {
@@ -181,5 +187,5 @@ class AutoTile {
     }
 
     public inline function getTile(id: Int, animFrame: Int): Tile
-        return autotiles[animFrame % animNum][id];
+        return autoTile.sub(id * size, animFrame * size, size, size);
 }
