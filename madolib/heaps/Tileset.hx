@@ -259,4 +259,11 @@ class Tileset {
             return slice.keys.map(key -> key.frame.clone());
         }
     }
+
+    public inline function sub(id: String, x: Float, y: Float, width: Float, height: Float): h2d.Tile {
+        final area = getArea(id);
+        final x = x + area.rect.x;
+        final y = y + area.rect.y;
+        return rawTile.sub(x, y, width, height);
+    }
 }
