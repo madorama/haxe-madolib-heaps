@@ -201,7 +201,7 @@ class Aseprite {
             final tagFrames: Array<AsepriteFrame> = [];
 
             if(tag.startFrame == tag.endFrame) {
-                tagFrames.push(tagFrames[tag.startFrame].clone());
+                tagFrames.push(frames[tag.startFrame].clone());
             } else {
                 switch(tag.animationDirection) {
                     case AnimationDirection.FORWARD:
