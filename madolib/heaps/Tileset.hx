@@ -149,7 +149,8 @@ class Tileset {
         calcAllTiles();
     }
 
-    public function addAsepriteAtlas(id: String, ase: Aseprite) {
+    public function addAsepriteAtlas(aseRes: aseprite.res.Aseprite) {
+        final ase = Aseprite.load(aseRes);
         final tile = ase.tile;
         final area: TilesetArea = {
             tile: tile,
@@ -163,7 +164,7 @@ class Tileset {
                 tags: new StringMap(),
             },
         }
-        areas.set(id, area);
+        areas.set(aseRes.entry.path, area);
         packing();
 
         area.frames = ase.getFrames().map(frame -> {
