@@ -2,8 +2,11 @@ package madolib.heaps.assets;
 
 import haxe.ds.StringMap;
 import ase.AnimationDirection;
+import h2d.Bitmap;
 import h2d.ScaleGrid;
+import madolib.geom.Bounds;
 
+using madolib.extensions.IteratorExt;
 using madolib.extensions.MapExt;
 
 @:using(madolib.heaps.assets.Aseprite.AsepriteFrameExt)
@@ -292,8 +295,15 @@ class Aseprite {
         return slice;
     }
 
+    public inline function getFrame(frame: Int): AsepriteFrame {
+        if(frame < 0 || frame >= frames.length) {
+            throw 'Frame index out of bounds: ${frame}';
+        }
+        return frames[frame].clone();
+    }
+
     public inline function getFrames(): Array<AsepriteFrame> {
-        return frames.copy();
+        return frames.map(frame -> frame.clone());
     }
 
     public inline function getSlice(name: String, frames: Int = 0): AsepriteFrame {
@@ -323,5 +333,51 @@ class Aseprite {
         final key = slice.keys[frame];
 
         return new ScaleGrid(tile.sub(key.xOrigin, key.yOrigin, key.width, key.height, -key.xPivot, -key.yPivot), key.xCenter, key.yCenter);
+    }
+
+    public inline function toBitmap(): Bitmap {
+        return new Bitmap(getFrame(0).tile);
+    }
+
+    inline static function getCollisionBounds(baseSlice: SliceKey, ?colSlice: SliceKey, flipX: Bool = false, flipY: Bool = false): Bounds
+        return if(colSlice == null) {
+            new Bounds(
+                baseSlice.xOrigin,
+                baseSlice.yOrigin,
+                baseSlice.width,
+                baseSlice.height,
+            );
+        } else {
+            final padLeft = colSlice.xOrigin - baseSlice.xOrigin;
+            final padTop = colSlice.yOrigin - baseSlice.yOrigin;
+            final padRight = baseSlice.width - (padLeft + colSlice.width);
+            final padBottom = baseSlice.height - (padTop + colSlice.height);
+            final x = if(flipX) padRight else padLeft;
+            final y = if(flipY) padBottom else padTop;
+            new Bounds(x, y, colSlice.width, colSlice.height);
+        }
+
+    public inline function getCollisions(sliceName: String, ?collisionSliceName: String, flipX: Bool = false, flipY: Bool = false): Array<Bounds> {
+        if(!slices.exists(sliceName)) return [];
+        final baseSlice = getSliceWithName(sliceName).keys[0];
+        final colSliceName = collisionSliceName ?? '${sliceName}-Col';
+        final colNames = slices.keys().toArray().filter(k -> k.indexOf(colSliceName) == 0);
+        return if(colNames.length == 0) {
+            [getCollisionBounds(baseSlice, null, flipX, flipY)];
+        } else {
+            colNames.map(colName -> {
+                final colSlice = getSliceWithName(colName).keys[0];
+                getCollisionBounds(baseSlice, colSlice, flipX, flipY);
+            });
+        }
+    }
+
+    public inline function getCollision(sliceName: String, ?collisionSliceName: String, flipX: Bool = false, flipY: Bool = false): Option<Bounds> {
+        if(!slices.exists(sliceName)) return None;
+
+        final baseSlice = getSliceWithName(sliceName).keys[0];
+        final colSliceName = collisionSliceName ?? '${sliceName}-Col';
+        final colSlice = getSliceWithName(colSliceName).keys[0];
+        return Some(getCollisionBounds(baseSlice, colSlice, flipX, flipY));
     }
 }
