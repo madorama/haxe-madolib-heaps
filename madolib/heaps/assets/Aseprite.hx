@@ -309,7 +309,7 @@ class Aseprite {
     static final instances = new StringMap<Aseprite>();
 
     public inline static function load(res: aseprite.res.Aseprite): Aseprite {
-        return instances.withDefaultOrSet(res.entry.name, new Aseprite(res.toAseprite()));
+        return instances.withDefaultOrSet(res.entry.path, new Aseprite(res.toAseprite()));
     }
 
     public inline function toScaleGrid(name: String, frame: Int = 0) {
