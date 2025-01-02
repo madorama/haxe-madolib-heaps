@@ -36,6 +36,9 @@ class App extends hxd.App {
     public final onMouseEnter = new Signal0();
     public final onBlur = new Signal0();
 
+    public inline function getFixedUpdateAccumRatio(): Float
+        return fixedUpdateAccum / (defaultFrameRate / FIXED_UPDATE_FPS);
+
     public function new() {
         super();
         window = Window.getInstance();
