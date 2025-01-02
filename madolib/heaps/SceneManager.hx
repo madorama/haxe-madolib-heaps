@@ -38,6 +38,10 @@ class SceneManager {
     }
 
     inline static function update(dt: Float) {
+        for(scene in scenes) {
+            scene.doUpdate(dt);
+        }
+
         for(s in popReservedScenes) {
             s.dispose();
             scenes.remove(s);
@@ -48,10 +52,6 @@ class SceneManager {
             scenes.push(s);
         }
         pushReservedScenes = [];
-
-        for(scene in scenes) {
-            scene.doUpdate(dt);
-        }
     }
 
     inline static function fixedUpdate() {
