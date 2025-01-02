@@ -89,21 +89,21 @@ class App extends hxd.App {
     inline function doUpdate(dt: Float) {
         ftime += App.tmod;
 
-        for(node in disposedNodes) {
-            if(!node.onDisposed) {
-                node.onDispose();
-            }
-        }
-        disposedNodes = [];
-
-        runUpdate(dt);
-
         fixedUpdateAccum += dt;
         while(fixedUpdateAccum >= defaultFrameRate / FIXED_UPDATE_FPS) {
             runFixedUpdate();
             fixedUpdateAccum -= defaultFrameRate / FIXED_UPDATE_FPS;
         }
 
+        runUpdate(dt);
+
         runAfterUpdate(dt);
+
+        for(node in disposedNodes) {
+            if(!node.onDisposed) {
+                node.onDispose();
+            }
+        }
+        disposedNodes = [];
     }
 }

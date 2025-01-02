@@ -147,77 +147,65 @@ class SceneTree implements Updatable implements Disposable {
     inline function canRun(): Bool
         return !(paused || destroyed);
 
-    function update(dt: Float) {
-        function go(cs: Array<h2d.Object>) {
-            for(child in cs) {
-                final node = Util.downcast(child, Node);
-                if(node != null) {
-                    if(node.disposed) {
-                        @:privateAccess App.disposedNodes.push(node);
-                        nodes.remove(node);
-                        node.removeAllGroup();
-                        node.sceneTree = null;
-                    }
-                    if(!node.isStarted) {
-                        node.start();
-                    }
-                    if(node.active && node.isStarted)
-                        node.update(dt);
+    function startNodes() {}
+
+    function updateNode(node: Node, dt: Float) {
+        if(node.disposed) {
+            @:privateAccess App.disposedNodes.push(node);
+            nodes.remove(node);
+            node.removeAllGroup();
+            node.sceneTree = null;
+        }
+        if(!node.isStarted) {
+            node.start();
+            for(childNode in node.childNodes) {
+                if(!childNode.isStarted) {
+                    childNode.start();
                 }
-                go(child.children);
             }
         }
-        for(node in nodes) {
-            go(node.children);
-            node.update(dt);
-        }
+        if(node.canRun) node.update(dt);
+        for(childNode in node.childNodes)
+            updateNode(childNode, dt);
     }
 
-    function fixedUpdate() {
-        function go(cs: Array<h2d.Object>) {
-            for(child in cs) {
-                final node = Util.downcast(child, Node);
-                if(node != null && node.active) {
-                    node.fixedUpdate();
-                }
-                go(child.children);
-            }
-        }
-        for(node in nodes) {
-            go(node.children);
-            node.fixedUpdate();
-        }
+    function update(dt: Float) {}
+
+    function fixedUpdateNode(node: Node) {
+        if(node.canRun) node.fixedUpdate();
+        for(childNode in node.childNodes)
+            fixedUpdateNode(childNode);
     }
 
-    function afterUpdate(dt: Float) {
-        function go(cs: Array<h2d.Object>) {
-            for(child in cs) {
-                final node = Util.downcast(child, Node);
-                if(node != null && node.active) {
-                    node.afterUpdate(dt);
-                }
-                go(child.children);
-            }
-        }
-        for(node in nodes) {
-            go(node.children);
-            node.afterUpdate(dt);
-        }
+    function fixedUpdate() {}
+
+    function afterUpdateNode(node: Node, dt: Float) {
+        if(node.canRun) node.afterUpdate(dt);
+        for(childNode in node.childNodes)
+            afterUpdateNode(childNode, dt);
     }
+
+    function afterUpdate(dt: Float) {}
 
     inline function doUpdate(dt: Float) {
         if(!canRun()) return;
         ftime += dt;
+        for(node in nodes)
+            updateNode(node, dt);
         update(dt);
     }
 
     inline function doFixedUpdate() {
         if(!canRun()) return;
+        for(node in nodes)
+            fixedUpdateNode(node);
         fixedUpdate();
     }
 
     inline function doAfterUpdate(dt: Float) {
         if(!canRun()) return;
+        for(node in nodes)
+            afterUpdateNode(node, dt);
         afterUpdate(dt);
     }
 }

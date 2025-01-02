@@ -10,13 +10,12 @@ import madolib.geom.Bounds;
 abstract class Collider extends Node {
     public var node(get, never): Node;
 
-    inline function get_node(): Node {
-        return if(parent is Node) {
-            cast parent;
+    inline function get_node(): Node
+        return if(parentNode != null) {
+            parentNode;
         } else {
             Node.empty;
         }
-    }
 
     @:isVar public var top(get, set): Float = 0;
     @:isVar public var bottom(get, set): Float = 0;

@@ -2,11 +2,15 @@ package madolib.heaps;
 
 import h2d.RenderContext;
 import h2d.col.Bounds;
+import madolib.event.Signal;
 
 using madolib.extensions.MapExt;
 
 class Node extends h2d.Object implements Updatable implements Disposable {
     public static final empty = new Node();
+
+    public var parentNode: Null<Node> = null;
+    public final childNodes: Array<Node> = [];
 
     public var pivotX: Float = 0;
     public var pivotY: Float = 0;
@@ -54,13 +58,14 @@ class Node extends h2d.Object implements Updatable implements Disposable {
 
     var isStarted = false;
     var active(default, set): Bool = true;
+    var activeStateBeforePause: Bool = true;
 
     inline function set_active(v: Bool): Bool {
         return if(active == v) {
             v;
         } else {
             active = v;
-            onChangeActive();
+            onChangeActive(active);
             v;
         }
     }
@@ -68,6 +73,13 @@ class Node extends h2d.Object implements Updatable implements Disposable {
     public var disposed(default, null) = false;
 
     var onDisposed(default, null) = false;
+
+    public var canRun(get, never): Bool;
+
+    inline function get_canRun(): Bool
+        return active && !disposed;
+
+    var onChangeActive = new Signal<Bool>();
 
     var grouped: Map<String, Array<Node>> = new Map<String, Array<Node>>();
 
@@ -87,77 +99,38 @@ class Node extends h2d.Object implements Updatable implements Disposable {
     public function start() {
         if(isStarted) return;
         isStarted = true;
-        function go(cs: Array<h2d.Object>) {
-            for(child in cs) {
-                final node = Util.downcast(child, Node);
-                if(node != null) {
-                    node.start();
-                } else {
-                    go(child.children);
-                }
-            }
-        }
-        go(children);
     }
 
     public function dispose() {
         if(disposed) return;
         disposed = true;
-
-        function go(cs: Array<h2d.Object>) {
-            for(child in cs) {
-                final node = Util.downcast(child, Node);
-                if(node != null) {
-                    node.dispose();
-                } else {
-                    go(child.children);
-                }
-            }
-        }
-
-        go(children);
+        @:privateAccess App.disposedNodes.push(this);
+        for(childNode in childNodes)
+            childNode.dispose();
     }
 
     function onDispose() {
         if(onDisposed) return;
         onDisposed = true;
-
         remove();
 
-        function go(cs: Array<h2d.Object>) {
-            for(child in cs) {
-                final node = Util.downcast(child, Node);
-                if(node != null) {
-                    node.onDispose();
-                } else {
-                    go(child.children);
-                }
-            }
-        }
-        go(children);
-    }
-
-    function onChangeActive() {
-        function go(cs: Array<h2d.Object>) {
-            for(child in cs) {
-                final node = Util.downcast(child, Node);
-                if(node != null) {
-                    node.active = active;
-                    node.onChangeActive();
-                } else {
-                    go(child.children);
-                }
-            }
-        }
-        go(children);
+        for(childNode in childNodes)
+            childNode.onDispose();
     }
 
     public function pause() {
+        activeStateBeforePause = active;
         active = false;
+        for(childNode in childNodes) {
+            childNode.active = false;
+        }
     }
 
     public function resume() {
         active = true;
+        for(childNode in childNodes) {
+            childNode.active = childNode.activeStateBeforePause;
+        }
     }
 
     final public inline function togglePause() {
@@ -242,26 +215,35 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         }
     }
 
-    override function addChildAt(s: h2d.Object, pos: Int) {
-        super.addChildAt(s, pos);
-        final node = Util.downcast(s, Node);
-        if(node != null) {
-            node.sceneTree = sceneTree;
-        }
+    public function addNode(node: Node) {
+        addNodeAt(node, childNodes.length);
     }
 
-    public function getParentNode(): Null<Node> {
-        var parent = parent;
+    public function addNodeAt(node: Node, pos: Int) {
+        addChildAt(node, pos);
+        pos = Math.clamp(pos, 0, childNodes.length);
+        var parent = this;
         while(parent != null) {
-            final node = Util.downcast(parent, Node);
-            if(node != null)
-                return node;
-            parent = parent.parent;
+            if(parent == node) throw "Recursive addNode";
+            parent = parent.parentNode;
         }
-        return null;
+        if(node.parentNode != null) {
+            node.parentNode.removeNode(node);
+        }
+        childNodes.insert(pos, node);
+        node.parentNode = this;
+        node.sceneTree = sceneTree;
     }
 
-    public function findChild<T>(f: h2d.Object -> Null<T>, recursive: Bool = false): Null<T> {
+    public function removeNode(node: Node) {
+        removeChild(node);
+        if(childNodes.remove(node)) {
+            node.sceneTree = null;
+            node.parentNode = null;
+        }
+    }
+
+    public function findObject<T>(f: h2d.Object -> Null<T>, recursive: Bool = false): Null<T> {
         function go(object: h2d.Object, f: h2d.Object -> Null<T>, recursive: Bool): Null<T> {
             final result = f(object);
             if(result != null) return result;
@@ -273,8 +255,6 @@ class Node extends h2d.Object implements Updatable implements Disposable {
             }
             return null;
         }
-        final result = f(this);
-        if(result != null) return result;
 
         for(child in children) {
             final result = go(child, f, recursive);
@@ -283,7 +263,7 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         return null;
     }
 
-    public function findChildren<T>(f: h2d.Object -> Null<T>, recursive: Bool = false): Array<T> {
+    public function findObjects<T>(f: h2d.Object -> Null<T>, recursive: Bool = false): Array<T> {
         final result: Array<T> = [];
         function go(object: h2d.Object, f: h2d.Object -> Null<T>, recursive: Bool) {
             final r = f(object);
@@ -295,11 +275,47 @@ class Node extends h2d.Object implements Updatable implements Disposable {
             }
         }
 
-        final r = f(this);
-        if(r != null) result.push(r);
-
         for(child in children) {
             go(child, f, recursive);
+        }
+        return result;
+    }
+
+    public function findNode<T: Node>(f: Node -> Null<T>, recursive: Bool = false): Null<T> {
+        function go(node: Node, f: Node -> Null<T>, recursive: Bool): Null<T> {
+            final result = f(node);
+            if(result != null) return result;
+
+            if(recursive) {
+                for(childNode in node.childNodes) {
+                    final result = go(childNode, f, recursive);
+                    if(result != null) return result;
+                }
+            }
+            return null;
+        }
+
+        for(childNode in childNodes) {
+            final result = go(childNode, f, recursive);
+            if(result != null) return result;
+        }
+        return null;
+    }
+
+    public function findNodes<T: Node>(f: Node -> Null<T>, recursive: Bool = false): Array<T> {
+        final result: Array<T> = [];
+        function go(node: Node, f: Node -> Null<T>, recursive: Bool) {
+            final r = f(node);
+            if(r != null) result.push(r);
+            if(recursive) {
+                for(childNode in node.childNodes) {
+                    go(childNode, f, recursive);
+                }
+            }
+        }
+
+        for(childNode in childNodes) {
+            go(childNode, f, recursive);
         }
         return result;
     }
