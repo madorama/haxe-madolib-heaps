@@ -96,13 +96,13 @@ class App extends hxd.App {
         }
         disposedNodes = [];
 
-        runUpdate(dt);
-
         fixedUpdateAccum += dt;
         while(fixedUpdateAccum >= defaultFrameRate / FIXED_UPDATE_FPS) {
             runFixedUpdate();
             fixedUpdateAccum -= defaultFrameRate / FIXED_UPDATE_FPS;
         }
+
+        runUpdate(dt);
 
         runAfterUpdate(dt);
     }

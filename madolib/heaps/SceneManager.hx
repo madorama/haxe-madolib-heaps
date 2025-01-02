@@ -56,13 +56,13 @@ class SceneManager {
 
     inline static function fixedUpdate() {
         for(scene in scenes) {
-            scene.fixedUpdate();
+            scene.doFixedUpdate();
         }
     }
 
     inline static function afterUpdate(dt: Float) {
         for(scene in scenes) {
-            scene.afterUpdate(dt);
+            scene.doAfterUpdate(dt);
         }
     }
 
