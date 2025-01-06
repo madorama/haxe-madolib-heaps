@@ -113,6 +113,9 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         if(onDisposed) return;
         onDisposed = true;
         remove();
+        if(parentNode != null) {
+            parentNode.removeNode(this);
+        }
 
         for(childNode in childNodes)
             childNode.onDispose();
