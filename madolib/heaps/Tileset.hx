@@ -36,6 +36,9 @@ private typedef TilesetArea = {
 class Tileset {
     final rawTile: h2d.Tile = h2d.Tile.fromColor(0);
 
+    public inline function getRawTile(): h2d.Tile
+        return rawTile.clone();
+
     final areas = new StringMap<TilesetArea>();
 
     public function new() {}
