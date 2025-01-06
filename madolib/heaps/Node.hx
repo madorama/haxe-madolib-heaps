@@ -4,6 +4,7 @@ import h2d.RenderContext;
 import h2d.col.Bounds;
 import madolib.event.Signal;
 
+using madolib.extensions.ArrayExt;
 using madolib.extensions.MapExt;
 
 class Node extends h2d.Object implements Updatable implements Disposable {
@@ -223,7 +224,6 @@ class Node extends h2d.Object implements Updatable implements Disposable {
     }
 
     public function addNodeAt(node: Node, pos: Int) {
-        addChildAt(node, pos);
         pos = Math.clamp(pos, 0, childNodes.length);
         var parent = this;
         while(parent != null) {
@@ -233,13 +233,12 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         if(node.parentNode != null) {
             node.parentNode.removeNode(node);
         }
-        childNodes.insert(pos, node);
+        childNodes.fastInsert(pos, node);
         node.parentNode = this;
         node.sceneTree = sceneTree;
     }
 
     public function removeNode(node: Node) {
-        removeChild(node);
         if(childNodes.remove(node)) {
             node.sceneTree = null;
             node.parentNode = null;
