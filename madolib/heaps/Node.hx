@@ -114,6 +114,7 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         if(onDisposed) return;
         onDisposed = true;
         remove();
+        removeAllGroup();
         if(parentNode != null) {
             parentNode.removeNode(this);
         }
@@ -217,6 +218,17 @@ class Node extends h2d.Object implements Updatable implements Disposable {
             absX = x * parent.matA + y * parent.matC + parent.absX - (pivotX * width * matA + pivotY * height * matC);
             absY = x * parent.matB + y * parent.matD + parent.absY - (pivotX * width * matB + pivotY * height * matD);
         }
+    }
+
+    public function moveSceneTree(sceneTree: SceneTree) {
+        if(sceneTree != null) {
+            removeAllGroup();
+            sceneTree.removeNode(this);
+            for(childNode in childNodes) {
+                childNode.moveSceneTree(sceneTree);
+            }
+        }
+        this.sceneTree = sceneTree;
     }
 
     public function addNode(node: Node) {

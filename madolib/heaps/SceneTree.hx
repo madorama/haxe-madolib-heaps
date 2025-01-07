@@ -36,17 +36,18 @@ class SceneTree implements Updatable implements Disposable {
 
     public function addNode(node: Node) {
         if(node.sceneTree != this) {
-            node.sceneTree?.nodes.remove(node);
-            node.removeAllGroup();
-            node.sceneTree = this;
-            nodes.push(node);
+            node.moveSceneTree(this);
+        } else {
+            for(childNode in node.childNodes) {
+                childNode.moveSceneTree(this);
+            }
         }
+        nodes.push(node);
     }
 
     public function removeNode(node: Node) {
-        if(node.sceneTree == this) {
-            node.dispose();
-        }
+        if(node.sceneTree != this) return;
+        nodes.remove(node);
     }
 
     public function addGroupNode(name: String, node: Node) {
