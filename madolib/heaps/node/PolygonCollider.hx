@@ -108,8 +108,9 @@ class PolygonCollider extends Collider {
 
     function debugDraw(graphics: h2d.Graphics) {
         final vs = getAbsoluteVertices();
-        for(v in vs.concat([vs[0]])) {
-            graphics.lineTo(absoluteX + v.x, absoluteY + v.y);
+        graphics.moveTo(vs[0].x, vs[0].y);
+        for(v in vs.slice(1).concat([vs[0]])) {
+            graphics.lineTo(v.x, v.y);
         }
     }
 
