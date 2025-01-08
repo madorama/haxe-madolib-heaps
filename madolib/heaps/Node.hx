@@ -82,7 +82,7 @@ class Node extends h2d.Object implements Updatable implements Disposable {
 
     var onChangeActive = new Signal<Bool>();
 
-    var grouped: Map<String, Array<Node>> = new Map<String, Array<Node>>();
+    var grouped = Set.createString();
 
     public var sceneTree: Null<SceneTree> = null;
 
@@ -118,9 +118,6 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         if(parentNode != null) {
             parentNode.removeNode(this);
         }
-
-        for(childNode in childNodes)
-            childNode.onDispose();
     }
 
     public function pause() {
@@ -152,25 +149,24 @@ class Node extends h2d.Object implements Updatable implements Disposable {
     public function afterUpdate(dt: Float) {}
 
     public function addGroup(name: String) {
-        if(grouped.exists(name)) return;
+        grouped.add(name);
         if(sceneTree == null) return;
         final group = sceneTree.groups.withDefaultOrSet(name, []);
         group.push(this);
-        grouped[name] = group;
     }
 
     public function removeGroup(name: String) {
-        final group = grouped.get(name);
+        grouped.remove(name);
+        final group = sceneTree.groups.get(name);
         if(group == null) return;
         group.remove(this);
-        grouped.remove(name);
     }
 
     public inline function isInGroup(name: String): Bool
         return grouped.exists(name);
 
     public function removeAllGroup() {
-        for(name => _ in grouped) {
+        for(name in grouped) {
             removeGroup(name);
         }
     }
@@ -221,14 +217,20 @@ class Node extends h2d.Object implements Updatable implements Disposable {
     }
 
     public function moveSceneTree(sceneTree: SceneTree) {
-        if(sceneTree != null) {
+        if(this.sceneTree == sceneTree) return;
+
+        if(this.sceneTree != null) {
+            final grouped = grouped.copy();
             removeAllGroup();
             sceneTree.removeNode(this);
-            for(childNode in childNodes) {
-                childNode.moveSceneTree(sceneTree);
-            }
         }
         this.sceneTree = sceneTree;
+        for(name in grouped) {
+            sceneTree.addGroupNode(name, this);
+        }
+        for(childNode in childNodes) {
+            childNode.moveSceneTree(sceneTree);
+        }
     }
 
     public function addNode(node: Node) {
