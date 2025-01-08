@@ -55,10 +55,10 @@ class PolygonCollider extends Collider {
         }
     }
 
-    function getAbsoluteVertices(): Array<Vector2> {
+    public inline function getAbsoluteVertices(): Array<Vector2> {
         polygon.scaleX = node.scaleX;
         polygon.scaleY = node.scaleY;
-        final vs = polygon.transformedVertices.map(v -> new Vector2(v.x, v.y));
+        final vs = polygon.transformedVertices.map(v -> new Vector2(v.x + absoluteX, v.y + absoluteY));
         polygon.scaleX = 1;
         polygon.scaleY = 1;
         return vs;
