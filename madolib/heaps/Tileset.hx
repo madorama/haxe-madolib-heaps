@@ -223,6 +223,11 @@ class Tileset {
         ).sorted((a, b) -> IntExt.compare(a.index, b.index));
     }
 
+    public inline function getFrame(id: String, index: Int): Frame {
+        final area = getArea(id);
+        return area.frames[index];
+    }
+
     public inline function getFrames(id: String): Array<Frame> {
         final area = getArea(id);
         return area.frames;
