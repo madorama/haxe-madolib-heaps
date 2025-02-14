@@ -11,7 +11,7 @@ class Node extends h2d.Object implements Updatable implements Disposable {
     public static final empty = new Node();
 
     public var parentNode: Null<Node> = null;
-    public final childNodes: Array<Node> = [];
+    public var childNodes(default, null): Array<Node> = [];
 
     public var pivotX: Float = 0;
     public var pivotY: Float = 0;
