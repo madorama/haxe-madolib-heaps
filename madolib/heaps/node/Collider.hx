@@ -61,6 +61,9 @@ abstract class Collider extends Node {
     inline function get_halfSize(): Vector2
         return new Vector2(width * .5, height * .5);
 
+    public var offsetX: Float = 0;
+    public var offsetY: Float = 0;
+
     public var absolutePosition(get, never): Vector2;
     public var absoluteX(get, never): Float;
     public var absoluteY(get, never): Float;
@@ -77,10 +80,10 @@ abstract class Collider extends Node {
         return new Vector2(absoluteX, absoluteY);
 
     inline function get_absoluteX(): Float
-        return x + node.pivotedX;
+        return x + node.pivotedX + offsetX;
 
     inline function get_absoluteY(): Float
-        return y + node.pivotedY;
+        return y + node.pivotedY + offsetY;
 
     inline function get_absoluteCenterX(): Float
         return absoluteX + width * .5;
@@ -89,16 +92,16 @@ abstract class Collider extends Node {
         return absoluteY + height * .5;
 
     inline function get_absoluteTop(): Float
-        return top * node.scaleY + node.pivotedY;
+        return top * node.scaleY + node.pivotedY + offsetY;
 
     inline function get_absoluteBottom(): Float
-        return bottom * node.scaleY + node.pivotedY;
+        return bottom * node.scaleY + node.pivotedY + offsetY;
 
     inline function get_absoluteLeft(): Float
-        return left * node.scaleX + node.pivotedX;
+        return left * node.scaleX + node.pivotedX + offsetX;
 
     inline function get_absoluteRight(): Float
-        return right * node.scaleX + node.pivotedX;
+        return right * node.scaleX + node.pivotedX + offsetX;
 
     inline function get_absoluteWidth(): Float
         return width * node.scaleX;
