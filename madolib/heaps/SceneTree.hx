@@ -92,14 +92,11 @@ class SceneTree implements Updatable implements Disposable {
     }
 
     public function find<T: Node>(f: Node -> Null<T>, ?groupName: String, recursive: Bool = false): Null<T> {
-        function go(object: h2d.Object, f: Node -> T, recursive: Bool): Null<T> {
-            final node = Util.downcast(object, Node);
-            if(node != null) {
-                final r = f(node);
-                if(r != null) return r;
-            }
+        function go(node: Node, f: Node -> Null<T>, recursive: Bool): Null<T> {
+            final r = f(node);
+            if(r != null) return r;
             if(recursive) {
-                for(child in object.children) {
+                for(child in node.childNodes) {
                     final result = go(child, f, recursive);
                     if(result != null) return result;
                 }
@@ -121,14 +118,11 @@ class SceneTree implements Updatable implements Disposable {
 
     public function findAll<T: Node>(f: Node -> Null<T>, ?groupName: String, recursive: Bool = false): Array<T> {
         final result = [];
-        function go(object: h2d.Object, f: Node -> Null<T>, recursive: Bool) {
-            final node = Util.downcast(object, Node);
-            if(node != null) {
-                final r = f(node);
-                if(f(r) != null) result.push(r);
-            }
+        function go(node: Node, f: Node -> Null<T>, recursive: Bool) {
+            final r = f(node);
+            if(r != null) result.push(r);
             if(recursive) {
-                for(child in object.children) {
+                for(child in node.childNodes) {
                     go(child, f, recursive);
                 }
             }
