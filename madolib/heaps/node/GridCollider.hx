@@ -94,7 +94,7 @@ class GridCollider extends Collider {
     }
 
     public inline function isEmpty(): Bool
-        return data.any(v -> v);
+        return data.all(v -> !v);
 
     override function get_width(): Float
         return cellWidth * cellsWidth;
