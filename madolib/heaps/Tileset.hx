@@ -152,7 +152,7 @@ class Tileset {
         calcAllTiles();
     }
 
-    public function addAsepriteAtlas(aseRes: aseprite.res.Aseprite) {
+    extern overload public inline function addAsepriteAtlas(name: String, aseRes: aseprite.res.Aseprite) {
         final ase = Aseprite.load(aseRes);
         final tile = ase.tile;
         final area: TilesetArea = {
@@ -167,7 +167,7 @@ class Tileset {
                 tags: new StringMap(),
             },
         }
-        areas.set(aseRes.entry.path, area);
+        areas.set(name, area);
         packing();
 
         area.frames = ase.getFrames().map(frame -> {
@@ -180,6 +180,10 @@ class Tileset {
         });
 
         calcAllTiles();
+    }
+
+    extern overload public inline function addAsepriteAtlas(aseRes: aseprite.res.Aseprite) {
+        addAsepriteAtlas(aseRes.entry.path, aseRes);
     }
 
     inline function getArea(id: String): TilesetArea {
