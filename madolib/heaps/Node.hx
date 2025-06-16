@@ -219,13 +219,13 @@ class Node extends h2d.Object implements Updatable implements Disposable {
     public function moveSceneTree(sceneTree: SceneTree) {
         if(this.sceneTree == sceneTree) return;
 
+        final groupedCopy = grouped.copy();
         if(this.sceneTree != null) {
-            final grouped = grouped.copy();
             removeAllGroup();
             sceneTree.removeNode(this);
         }
         this.sceneTree = sceneTree;
-        for(name in grouped) {
+        for(name in groupedCopy) {
             sceneTree.addGroupNode(name, this);
         }
         for(childNode in childNodes) {
