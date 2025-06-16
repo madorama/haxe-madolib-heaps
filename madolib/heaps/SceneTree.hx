@@ -74,7 +74,7 @@ class SceneTree implements Updatable implements Disposable {
     function onResize() {}
 
     public function dispose() {
-        while(nodes.length >= 0) {
+        while(nodes.length > 0) {
             final node = nodes[0];
             nodes.splice(0, 1);
             node.dispose();
