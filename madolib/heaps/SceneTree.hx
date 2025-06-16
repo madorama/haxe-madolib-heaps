@@ -144,12 +144,17 @@ class SceneTree implements Updatable implements Disposable {
 
     function startNodes() {}
 
+    var removedNodes: Array<Node> = [];
+
     function updateNode(node: Node, dt: Float) {
         if(node.disposed) {
             @:privateAccess App.disposedNodes.push(node);
-            nodes.remove(node);
+            if(removedNodes.indexOf(node) == -1) {
+                removedNodes.push(node);
+            }
             node.removeAllGroup();
             node.sceneTree = null;
+            return;
         }
         if(!node.isStarted) {
             node.start();
@@ -187,6 +192,13 @@ class SceneTree implements Updatable implements Disposable {
         ftime += dt;
         for(node in nodes)
             updateNode(node, dt);
+
+        if(removedNodes.length > 0) {
+            for(node in removedNodes) {
+                nodes.remove(node);
+            }
+            removedNodes = [];
+        }
         update(dt);
     }
 
