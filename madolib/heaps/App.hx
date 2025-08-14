@@ -107,6 +107,6 @@ class App extends hxd.App {
                 node.onDispose();
             }
         }
-        disposedNodes = [];
+        disposedNodes.resize(0);
     }
 }

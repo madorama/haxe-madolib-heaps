@@ -46,12 +46,12 @@ class SceneManager {
             s.dispose();
             scenes.remove(s);
         }
-        popReservedScenes = [];
+        popReservedScenes.resize(0);
 
         for(s in pushReservedScenes) {
             scenes.push(s);
         }
-        pushReservedScenes = [];
+        pushReservedScenes.resize(0);
     }
 
     inline static function fixedUpdate() {

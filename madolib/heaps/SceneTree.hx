@@ -197,7 +197,7 @@ class SceneTree implements Updatable implements Disposable {
             for(node in removedNodes) {
                 nodes.remove(node);
             }
-            removedNodes = [];
+            removedNodes.resize(0);
         }
         update(dt);
     }
