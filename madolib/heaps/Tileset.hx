@@ -202,9 +202,13 @@ class Tileset {
         return area.ase;
     }
 
-    public function getTile(id: String, tileIndex: Int): h2d.Tile {
+    extern overload public inline function getTile(id: String, tileIndex: Int): h2d.Tile {
         final area = getArea(id);
         return area.tiles[tileIndex];
+    }
+
+    extern overload public inline function getTile(res: aseprite.res.Aseprite, tileIndex: Int): h2d.Tile {
+        return getTile(res.entry.path, tileIndex);
     }
 
     public function addRect(id: String, rect: Rect) {
@@ -227,17 +231,25 @@ class Tileset {
         ).sorted((a, b) -> IntExt.compare(a.index, b.index));
     }
 
-    public inline function getFrame(id: String, index: Int): Frame {
+    extern overload public inline function getFrame(id: String, index: Int): Frame {
         final area = getArea(id);
         return area.frames[index];
     }
 
-    public inline function getFrames(id: String): Array<Frame> {
+    extern overload public inline function getFrame(res: aseprite.res.Aseprite, index: Int): Frame {
+        return getFrame(res.entry.path, index);
+    }
+
+    extern overload public inline function getFrames(id: String): Array<Frame> {
         final area = getArea(id);
         return area.frames;
     }
 
-    public function getSlice(id: String, sliceName: String, frames: Int = 0): AsepriteFrame {
+    extern overload public inline function getFrames(res: aseprite.res.Aseprite): Array<Frame> {
+        return getFrames(res.entry.path);
+    }
+
+    extern overload public inline function getSlice(id: String, sliceName: String, frames: Int = 0): AsepriteFrame {
         final ase = getAseData(id);
         final slice = ase.slices.get(sliceName);
         if(slice == null) {
@@ -246,7 +258,11 @@ class Tileset {
         return slice.keys[frames].frame.clone();
     }
 
-    public function getSlices(id: String, sliceName: String): Array<AsepriteFrame> {
+    extern overload public inline function getSlice(res: aseprite.res.Aseprite, sliceName: String, frames: Int = 0): AsepriteFrame {
+        return getSlice(res.entry.path, sliceName, frames);
+    }
+
+    extern overload public inline function getSlices(id: String, sliceName: String): Array<AsepriteFrame> {
         final ase = getAseData(id);
         final slice = ase.slices.get(sliceName);
         if(slice == null) {
@@ -255,7 +271,11 @@ class Tileset {
         return slice.keys.map(key -> key.frame.clone());
     }
 
-    public function getTag(id: String, tagName: String, ?sliceName: String): Array<AsepriteFrame> {
+    extern overload public inline function getSlices(res: aseprite.res.Aseprite, sliceName: String): Array<AsepriteFrame> {
+        return getSlices(res.entry.path, sliceName);
+    }
+
+    extern overload public inline function getTag(id: String, tagName: String, ?sliceName: String): Array<AsepriteFrame> {
         final ase = getAseData(id);
         final tag = ase.tags.get(tagName);
         if(tag == null) {
@@ -273,10 +293,18 @@ class Tileset {
         }
     }
 
-    public inline function sub(id: String, x: Float, y: Float, width: Float, height: Float): h2d.Tile {
+    extern overload public inline function getTag(res: aseprite.res.Aseprite, tagName: String, ?sliceName: String): Array<AsepriteFrame> {
+        return getTag(res.entry.path, tagName, sliceName);
+    }
+
+    extern overload public inline function sub(id: String, x: Float, y: Float, width: Float, height: Float): h2d.Tile {
         final area = getArea(id);
         final x = x + area.rect.x;
         final y = y + area.rect.y;
         return rawTile.sub(x, y, width, height);
+    }
+
+    extern overload public inline function sub(res: aseprite.res.Aseprite, x: Float, y: Float, width: Float, height: Float): h2d.Tile {
+        return sub(res.entry.path, x, y, width, height);
     }
 }
