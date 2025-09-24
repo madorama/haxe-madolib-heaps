@@ -157,6 +157,7 @@ class Node extends h2d.Object implements Updatable implements Disposable {
 
     public function removeGroup(name: String) {
         grouped.remove(name);
+        if(sceneTree == null) return;
         final group = sceneTree.groups.get(name);
         if(group == null) return;
         group.remove(this);
