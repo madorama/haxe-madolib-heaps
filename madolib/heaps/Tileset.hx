@@ -249,30 +249,44 @@ class Tileset {
         return getFrames(res.entry.path);
     }
 
-    extern overload public inline function getSlice(id: String, sliceName: String, frames: Int = 0): AsepriteFrame {
+    extern overload public inline function getSlice(id: String, sliceName: String, frames: Int = 0, ?tagName: String): AsepriteFrame {
         final ase = getAseData(id);
-        final slice = ase.slices.get(sliceName);
+        final slice = if(tagName != null) {
+            final tagData = ase.tags.get(tagName);
+            if(tagData == null)
+                throw 'Tag not found: ${tagName}';
+            tagData.slices.get(sliceName);
+        } else {
+            ase.slices.get(sliceName);
+        }
         if(slice == null) {
             throw 'Slice not found: ${sliceName}';
         }
         return slice.keys[frames].frame.clone();
     }
 
-    extern overload public inline function getSlice(res: aseprite.res.Aseprite, sliceName: String, frames: Int = 0): AsepriteFrame {
-        return getSlice(res.entry.path, sliceName, frames);
+    extern overload public inline function getSlice(res: aseprite.res.Aseprite, sliceName: String, frames: Int = 0, ?tagName: String): AsepriteFrame {
+        return getSlice(res.entry.path, sliceName, frames, tagName);
     }
 
-    extern overload public inline function getSlices(id: String, sliceName: String): Array<AsepriteFrame> {
+    extern overload public inline function getSlices(id: String, sliceName: String, ?tagName: String): Array<AsepriteFrame> {
         final ase = getAseData(id);
-        final slice = ase.slices.get(sliceName);
+        final slice = if(tagName != null) {
+            final tagData = ase.tags.get(tagName);
+            if(tagData == null)
+                throw 'Tag not found: ${tagName}';
+            tagData.slices.get(sliceName);
+        } else {
+            ase.slices.get(sliceName);
+        }
         if(slice == null) {
             throw 'Slice not found: ${sliceName}';
         }
         return slice.keys.map(key -> key.frame.clone());
     }
 
-    extern overload public inline function getSlices(res: aseprite.res.Aseprite, sliceName: String): Array<AsepriteFrame> {
-        return getSlices(res.entry.path, sliceName);
+    extern overload public inline function getSlices(res: aseprite.res.Aseprite, sliceName: String, ?tagName: String): Array<AsepriteFrame> {
+        return getSlices(res.entry.path, sliceName, tagName);
     }
 
     extern overload public inline function getTag(id: String, tagName: String, ?sliceName: String): Array<AsepriteFrame> {
