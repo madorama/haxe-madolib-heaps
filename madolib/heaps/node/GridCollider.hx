@@ -75,6 +75,7 @@ class GridCollider extends Collider {
             if(y + h > cellsHeight)
                 h = cellsHeight - y;
         }
+        resize();
 
         for(iy in 0...h) {
             for(ix in 0...w) {
