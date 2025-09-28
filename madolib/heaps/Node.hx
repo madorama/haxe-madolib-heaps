@@ -106,7 +106,7 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         if(disposed) return;
         disposed = true;
         @:privateAccess App.disposedNodes.push(this);
-        for(childNode in childNodes)
+        for(childNode in childNodes.copy())
             childNode.dispose();
     }
 
@@ -257,6 +257,12 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         if(childNodes.remove(node)) {
             node.sceneTree = null;
             node.parentNode = null;
+        }
+    }
+
+    public function removeAllNodes() {
+        for(childNode in childNodes.copy()) {
+            removeNode(childNode);
         }
     }
 
