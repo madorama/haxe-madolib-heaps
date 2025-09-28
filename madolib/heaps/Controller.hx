@@ -67,7 +67,7 @@ class KeyBinding {
 
     public inline function removeKey(...keys: Int): KeyBinding {
         for(key in keys)
-            keys.remove(key);
+            this.keys.remove(key);
         return this;
     }
 
