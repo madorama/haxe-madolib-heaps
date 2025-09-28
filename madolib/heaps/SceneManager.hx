@@ -3,7 +3,7 @@ package madolib.heaps;
 using madolib.extensions.ArrayExt;
 
 @:access(madolib.heaps.SceneTree)
-@:allow(madolib.hepas.App)
+@:allow(madolib.heaps.App)
 class SceneManager {
     static final scenes: Array<SceneTree> = [];
 

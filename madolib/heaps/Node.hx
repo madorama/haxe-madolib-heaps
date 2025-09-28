@@ -124,7 +124,7 @@ class Node extends h2d.Object implements Updatable implements Disposable {
         activeStateBeforePause = active;
         active = false;
         for(childNode in childNodes) {
-            childNode.active = false;
+            childNode.pause();
         }
     }
 
