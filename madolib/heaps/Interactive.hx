@@ -3,7 +3,7 @@ package madolib.heaps;
 import madolib.event.Signal0;
 import madolib.event.Signal;
 
-class Interactive {
+class Interactive extends Node {
     final interactive: h2d.Interactive;
 
     public var cursor(get, set): Null<hxd.Cursor>;
@@ -21,38 +21,6 @@ class Interactive {
 
     inline function set_allowMultiClick(v: Bool): Bool
         return interactive.allowMultiClick = v;
-
-    public var x(get, set): Float;
-
-    inline function get_x(): Float
-        return interactive.x;
-
-    inline function set_x(v: Float): Float
-        return interactive.x = v;
-
-    public var y(get, set): Float;
-
-    inline function get_y(): Float
-        return interactive.y;
-
-    inline function set_y(v: Float): Float
-        return interactive.y = v;
-
-    public var width(get, set): Float;
-
-    inline function get_width(): Float
-        return interactive.width;
-
-    inline function set_width(v: Float): Float
-        return interactive.width = v;
-
-    public var height(get, set): Float;
-
-    inline function get_height(): Float
-        return interactive.height;
-
-    inline function set_height(v: Float): Float
-        return interactive.height = v;
 
     public var isEllipse(get, set): Bool;
 
@@ -143,7 +111,10 @@ class Interactive {
     }
 
     public function new(interactive: h2d.Interactive) {
+        super();
         this.interactive = interactive;
+        addChild(interactive);
+
         interactive.onOver = e -> {
             if(disabled) return;
             onOver(e);
@@ -230,7 +201,17 @@ class Interactive {
     public inline function hasFocus(): Bool
         return interactive.hasFocus();
 
-    public inline function remove() {
+    override function onRemove() {
+        super.onRemove();
         interactive.remove();
+    }
+
+    override function update(dt: Float) {
+        interactive.x = x;
+        interactive.y = y;
+        interactive.width = width;
+        interactive.height = height;
+
+        super.update(dt);
     }
 }
